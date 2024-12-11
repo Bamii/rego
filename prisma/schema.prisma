@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Rating {
+  id         Int     @id @default(autoincrement())
+  user_id    Int
+  user       User    @relation(fields: [user_id], references: [id])
+  listing_id Int
+  listing    Listing @relation(fields: [listing_id], references: [id])
+}
+
+model Review {
+  id         Int     @id @default(autoincrement())
+  content    String
+  // parent_id Int?
+  // parent Review? @relation('parent', fields: [parent_id], references: [id])
+  user_id    Int
+  user       User    @relation(fields: [user_id], references: [id])
+  listing_id Int
+  listing    Listing @relation(fields: [listing_id], references: [id])
+}
+
+model User {
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  reviews Review[]
+  ratings Rating[]
+}
+
+model Realtor {
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  password String
+  listings Listing[]
+}
+
+model Listing {
+  id       Int      @id @default(autoincrement())
+  images   String[]
+  title    String
+  location String
+
+  features      String[]
+  bed           Int      @default(0)
+  bath          Int      @default(0)
+  toilet        Int      @default(0)
+  parking_space Int      @default(0)
+
+  type       ListingType
+  realtor_id Int
+  realtor    Realtor     @relation(fields: [realtor_id], references: [id])
+  reviews    Review[]
+  ratings    Rating[]
+}
+
+enum ListingType {
+  SelfContain
+}
