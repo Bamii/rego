@@ -1,21 +1,10 @@
 import { z } from "zod";
 import { v2 as cloudinary } from "cloudinary";
-import formidable from "formidable";
 
 cloudinary.config({
     cloud_name: "bambam",
-    api_key: "121138374187311",
-    api_secret: "qsMwxhFNLSl_1GeTJGBmevfbaOI",
-});
-
-const createListing = z.object({
-    title: z.string().default(""),
-    bath: z.number(),
-    toilet: z.number(),
-    parking_space: z.number(),
-    images: z.array(z.string()),
-    location: z.string(),
-    type: z.string(),
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET,
 });
 
 export default defineEventHandler(async (event) => {
