@@ -319,8 +319,9 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
     close: Function,
+    reload: Function
 });
 const state = reactive({
     loading: false,
@@ -367,6 +368,8 @@ async function create_listing(e) {
                 throw new Error(await res.text());
             }
         }
+        props.close();
+        props.reload();
     } catch (error) {
         state.error = error.message;
     } finally {

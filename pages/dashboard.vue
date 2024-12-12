@@ -2,10 +2,12 @@
     <div class="min-h-full">
         <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. -->
         <div class="max-w-5xl mx-auto flex flex-col flex-1">
-          <Header />
+            <Header />
             <main class="flex-1 pb-8">
                 <!-- Page header -->
-                <div class="px-3 bg-white shadow-y flex items-center justify-between">
+                <div
+                    class="px-3 bg-white shadow-y flex items-center justify-between"
+                >
                     <div class="px-4 sm:px-6 lg:max-w-6xl lg:mr-auto lg:px-8">
                         <div
                             class="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200"
@@ -28,7 +30,8 @@
                                             <h1
                                                 class="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:leading-9 sm:truncate"
                                             >
-                                                Good morning, {{ realtor?.name }}
+                                                Good morning,
+                                                {{ realtor?.name }}
                                             </h1>
                                         </div>
                                     </div>
@@ -37,9 +40,15 @@
                         </div>
                     </div>
 
-            <div class="mt-6 flex space-x-3 md:mt-0 md:ml-4 lg:mr-3">
-              <button @click="open_create_listing" type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">Create listing</button>
-            </div>
+                    <div class="mt-6 flex space-x-3 md:mt-0 md:ml-4 lg:mr-3">
+                        <button
+                            @click="open_create_listing"
+                            type="button"
+                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                        >
+                            Create listing
+                        </button>
+                    </div>
                 </div>
 
                 <div class="mt-8">
@@ -80,13 +89,16 @@
                                                 <dt
                                                     class="text-sm font-medium text-gray-500 truncate"
                                                 >
-                                                  Houses shown
+                                                    Houses shown
                                                 </dt>
                                                 <dd>
                                                     <div
                                                         class="text-lg font-medium text-gray-900"
                                                     >
-                                                      {{ realtor.listings.length }}
+                                                        {{
+                                                            realtor.listings
+                                                                .length
+                                                        }}
                                                     </div>
                                                 </dd>
                                             </dl>
@@ -100,7 +112,7 @@
                     <h2
                         class="mb-2 max-w-6xl mx-auto mt-8 px-4 text-lg leading-6 font-medium text-gray-900 sm:px-6 lg:px-8"
                     >
-                      Houses List
+                        Houses List
                     </h2>
 
                     <AgentListing :listings="realtor?.listings" />
@@ -109,7 +121,11 @@
         </div>
     </div>
 
-    <CreateListing v-if="create_listing" :close="close_create_listing" />
+    <CreateListing
+        :reload="fetchData"
+        v-if="create_listing"
+        :close="close_create_listing"
+    />
 </template>
 
 <script setup>
@@ -127,16 +143,18 @@ const open_create_listing = () => {
 };
 
 const realtor = ref({
-  listings: []
-})
-  onMounted(() => {
-    (async function() {
-      try {
-        const response = await fetch('/api/mylistings');
+    listings: [],
+});
+
+const fetchData = async function () {
+    try {
+        const response = await fetch("/api/mylistings");
         const data = await response.json();
         realtor.value = data.realtor;
-      } catch (error) {
-      }
-    })()
-  })
+    } catch (error) {}
+};
+
+onMounted(() => {
+    fetchData();
+});
 </script>
