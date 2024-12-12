@@ -1,23 +1,49 @@
 import jwt from '~/server/utils/jwt';
+import * as bcrypt from "bcrypt"
 // import prisma from "~/lib/prisma";
 
+    const comparePassword = ({
+      password,
+      hashedPassword,
+    }: {
+      password: string;
+      hashedPassword: string;
+    }) => {
+      return bcrypt.compareSync(password, hashedPassword);
+    };
+
 export default defineEventHandler(async (req) => {
-  const body = (await readBody(req));
-  const { email, password } = body;
+    const { email, password, type } = req.context.body;
 
-  console.log(body, email, password)
+    let identifier;
+    switch (type) {
+        case "user":{
+            identifier = prisma.user;
+            break;
+}
+        case "admin": {
+          identifier = prisma.realtor;
+          break;
+        }
 
-  setCookie(req, 'access_token', "sdaffd", { secure: true });
-  return "accessToken";
+        default:
+            throw new Error("invalid usage");
+    }
 
-  let user = await prisma.user.findUnique({ where: { email } });
+    let user = await identifier.findUnique({ where: { email } });
+    if (!user) throw new Error("invalid login credentials");
 
-  if (!user) {
-    return null
-  }
+    if(!comparePassword({ password, hashedPassword: user.password })) {
+      throw new Error("invalid login credentials")
+    }
 
-  const accessToken = jwt.signPayload({ email: user.email, name: user.name });
-  
-  setCookie(req, 'access_token', accessToken, { secure: true });
-  return accessToken;
+    const accessToken = jwt.signPayload({
+        email: user.email,
+        id: user.id,
+        name: user.name,
+        type
+    });
+
+    setCookie(req, "access_token", accessToken, { secure: true });
+    return accessToken;
 });

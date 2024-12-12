@@ -16,6 +16,7 @@ datasource db {
 model Rating {
   id         Int     @id @default(autoincrement())
   user_id    Int
+  rating     Int
   user       User    @relation(fields: [user_id], references: [id])
   listing_id Int
   listing    Listing @relation(fields: [listing_id], references: [id])
@@ -24,17 +25,22 @@ model Rating {
 model Review {
   id         Int     @id @default(autoincrement())
   content    String
-  // parent_id Int?
-  // parent Review? @relation('parent', fields: [parent_id], references: [id])
+  rating     Int     @default(3)
   user_id    Int
   user       User    @relation(fields: [user_id], references: [id])
   listing_id Int
   listing    Listing @relation(fields: [listing_id], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+  // parent_id Int?
+  // parent Review? @relation('parent', fields: [parent_id], references: [id])
 }
 
 model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
+  password String
   name    String?
   reviews Review[]
   ratings Rating[]
@@ -42,6 +48,8 @@ model User {
 
 model Realtor {
   id       Int       @id @default(autoincrement())
+  name   String
+  phone  String      @default("")
   email    String    @unique
   password String
   listings Listing[]
@@ -52,9 +60,11 @@ model Listing {
   images   String[]
   title    String
   location String
+  price Int @default(0)
+  description String @default("")
 
   features      String[]
-  bed           Int      @default(0)
+  // bed           Int      @default(0)
   bath          Int      @default(0)
   toilet        Int      @default(0)
   parking_space Int      @default(0)
@@ -64,8 +74,13 @@ model Listing {
   realtor    Realtor     @relation(fields: [realtor_id], references: [id])
   reviews    Review[]
   ratings    Rating[]
+    createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
 }
 
 enum ListingType {
   SelfContain
+  OneBedroom
+  TwoBedroom
+  Bungalow
 }

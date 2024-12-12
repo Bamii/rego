@@ -4,21 +4,19 @@
     >
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <ErrorComponent v-if="state.error">
-                    {{ state.error }}
-                </ErrorComponent>
-                <form @submit.prevent="login" class="space-y-6">
+                <form @submit.prevent="signup" class="space-y-6">
                     <!-- This example requires Tailwind CSS v2.0+ -->
                     <div>
-                        <div class="mt-2 w-full">
+                        <fieldset class="mt-2 w-full">
                             <div class="mx-auto flex items-center gap-4">
                                 <input
                                     id="user_radio"
                                     type="radio"
-                                    checked
                                     name="type"
+                                    checked
                                     value="user"
                                     class="peer/user sr-only bg-white border-gray-200 text-gray-900"
+                                    aria-labelledby="memory-option-0-label"
                                 />
                                 <label
                                     for="user_radio"
@@ -33,6 +31,7 @@
                                     name="type"
                                     value="admin"
                                     class="peer/admin sr-only sr-only bg-white border-gray-200 text-gray-900 hover:bg-gray-50 checked:bg-indigo-600 checked:border-transparent checked:text-white hover:bg-indigo-700"
+                                    aria-labelledby="memory-option-1-label"
                                 />
                                 <label
                                     for="admin_radio"
@@ -41,6 +40,25 @@
                                     Realtor
                                 </label>
                             </div>
+                        </fieldset>
+                    </div>
+
+                    <div>
+                        <label
+                            for="name"
+                            class="block text-sm font-medium text-gray-700"
+                        >
+                            Name
+                        </label>
+                        <div class="mt-1">
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                autocomplete="name"
+                                required
+                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
                         </div>
                     </div>
 
@@ -57,6 +75,25 @@
                                 name="email"
                                 type="email"
                                 autocomplete="email"
+                                required
+                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label
+                            for="phone"
+                            class="block text-sm font-medium text-gray-700"
+                        >
+                            Phone
+                        </label>
+                        <div class="mt-1">
+                            <input
+                                id="phone"
+                                name="phone"
+                                type="tel"
+                                autocomplete="phone"
                                 required
                                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             />
@@ -85,10 +122,9 @@
                     <div>
                         <button
                             type="submit"
-                            :disabled="state.loading"
                             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
-                        {{ state.loading ? "loading..." : "Sign In"}}
+                            Sign up
                         </button>
                     </div>
                 </form>
@@ -98,18 +134,18 @@
 </template>
 
 <script setup>
+const router = useRouter();
 const state = reactive({
     error: null,
-    loading: false
-})
-async function login(e) {
-    state.error = null
-    state.loading = true
+    loading: false,
+});
+async function signup(e) {
+    state.error = null;
+    state.loading = true;
     try {
-        const body =new FormData(e.target) 
-        const res = await fetch("/api/login", {
+        const body = new FormData(e.target);
+        const res = await fetch("/api/signup", {
             body,
-            // headers: { "Content-type": "application/json" },
             method: "post",
         });
 
@@ -121,15 +157,15 @@ async function login(e) {
             }
         }
 
-        if(body.get('type') == 'admin') {
-            navigateTo("/dashboard")
+        if (body.get("type") == "admin") {
+            navigateTo("/dashboard");
         } else {
-            navigateTo('/')
+            navigateTo("/");
         }
     } catch (error) {
-        state.error = error.message
+        state.error = error.message;
     } finally {
-        state.loading = false
+        state.loading = false;
     }
 }
 </script>
